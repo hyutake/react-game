@@ -1,0 +1,74 @@
+.nav {
+    background-color: var(--color-gray-700);
+}
+
+.nav ul{
+    display: flex;
+    list-style: none;
+    padding: 1rem;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-reset-btn {
+    box-shadow: none;
+    border-radius: 5px;
+    border: 0.5px solid black;
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem;
+}
+
+.timer-nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.timer-nav button {
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.window-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.window-nav-label{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.window-nav-label input[type='radio'] {
+    transform: scale(1.5);
+    margin: 0px 6px;
+}
+
+.btn-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.btn-row button {
+    border: 1px solid var(--color-primary-300);
+}
+
+.btn-active {
+    background-color: var(--color-primary-300);
+    color: var(--color-gray-800);
+}
+
+h4 {
+    margin: 0;
+}
