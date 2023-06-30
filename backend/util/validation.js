@@ -14,9 +14,14 @@ const isValidAlias = (alias, existingUsers, errors) => {
 		const user = existingUsers.find(
 			(user) => user.alias === alias
 		);
-        console.log(user);
-        console.log('Found existing alias!');
-		if (user !== undefined) errors.alias = "Alias is already in use";
+        
+		if (user) {
+			console.log(user);
+			console.log('Found existing alias!');
+			errors.alias = "Alias is already in use";
+		} else {
+			console.log('Valid alias!');
+		}
 	}
 }
 
@@ -30,9 +35,13 @@ const isValidUsername = (username, existingUsers, errors) => {
 		const user = existingUsers.find(
 			(user) => user.username === username
 		);
-        console.log(user);
-        console.log('Found existing username!');
-		if (user !== undefined) errors.username = "Username already exists";
+		if (user) {
+			console.log(user);
+			console.log('Found existing username!');
+			errors.username = "Username already exists";
+		} else {
+			console.log('Valid username!');
+		}
 	}
 }
 

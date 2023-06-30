@@ -35,9 +35,9 @@ exports.postLogin = async (req, res, next) => {
 	}
 
 	// login attempt is valid - return a token
-	console.log(`[ADMIN]: user '${username}' has logged in successfully`)
+	console.log(`[ADMIN]: user '${username}' has logged in successfully`);
 	const token = createJSONToken(username);
-	res.json({ token,  alias: user.alias});
+	res.json({ token, alias: user.alias });
 };
 
 exports.postSignup = async (req, res, next) => {
@@ -48,14 +48,14 @@ exports.postSignup = async (req, res, next) => {
 	const alias = req.body.alias;
 
 	// get all the current users
-	const storedData = await readData('users.json');
-	// initialise the users array if there were none (i.e., no users yet) 
+	const storedData = await readData("users.json");
+	// initialise the users array if there were none (i.e., no users yet)
 	if (!storedData.users) {
 		storedData.users = [];
 	}
 
 	// data validation
-	const errors = isValidUser({username, password, alias}, storedData.users);
+	const errors = isValidUser({ username, password, alias }, storedData.users);
 	if (Object.keys(errors).length > 0) {
 		return res.status(422).json({
 			message: "User signup failed due to validation errors.",
@@ -68,7 +68,12 @@ exports.postSignup = async (req, res, next) => {
 	// 'hide' the password
 	const hashedPw = await hash(password, 12);
 
-	storedData.users.push({ username: username, password: hashedPw, alias: alias, id: userId }); // password from ...data will be overwritten with hashedPw
-	await writeData('users.json' ,storedData);
-	res.status(201).json({ message: 'Successfully signed up!' });
+	storedData.users.push({
+		username: username,
+		password: hashedPw,
+		alias: alias,
+		id: userId,
+	}); 
+	await writeData("users.json", storedData);
+	res.status(201).json({ message: "Successfully signed up!" });
 };

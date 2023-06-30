@@ -11,7 +11,6 @@ import xhair1 from '../../assets/image/xhair1.png';
 import xhair2 from '../../assets/image/xhair2.png';
 import xhair3 from '../../assets/image/xhair3.png';
 // hitsound
-import golf_hit from '../../assets/audio/golf-shot.wav';
 import osu_hit from '../../assets/audio/osu-hit.wav';
 
 function statsReducer(state, action) {
@@ -133,14 +132,13 @@ function TargetWindow(props) {
 	
 			// if existing, check if there is even a need to update the highscore (i.e., new pb score) + update backend if so (patch)
 	
-			// if not existing, update backend (post)
+			// if user has no scores in current mode, update backend (post)
 			sendRequest({
 				url: 'http://localhost:4000/game',
 				method: 'POST',
 				data: {
 					score: statsState.score,
-					timer: timerSec,
-					windowSize: windowSize,
+					state: `${windowSize}_${timerSec}`,
 					player: props.player
 				},
 				headers: {

@@ -1,55 +1,71 @@
 import { useReducer } from "react";
+import { useRouteLoaderData } from "react-router-dom";
 import GameContext from "./game-context";
+import useHttp from "../hooks/use-http";
 
 const defaultGameState = {
-    score: {
-        short: 0,
-        default: 0,
-        medium_long: 0,
-        long: 0
-    },
+    scores: [],
 }
 
-const gameReducer = (state, action) => {
-    if(action.type === 'START') {
+const gameStateReducer = (state, action) => {
+    if(action.type === 'ADD') {
         return {
-            isActive: true,
-            showStats: false
-        }
+            scores: []
+        };
     }
-    if(action.type === 'STOP') {
+    if(action.type === 'UPDATE') {
         return {
-            isActive: false,
-            showStats: true
-        }
+            scores: []
+        };
     }
-    if(action.type === 'RESET') {
-        return defaultGameState;
+    if(action.type === 'REPLACE') {
+        return action.data;
     }
     return defaultGameState;
 }
 
 const GameProvider = (props) => {
-    const [gameState, dispatchState] = useReducer(gameReducer, defaultGameState)
+    const [gameState, dispatchState] = useReducer(gameStateReducer, defaultGameState);
 
-    function startGameHandler() {
-        dispatchState({ type: 'START', })
+    const {error, sendRequest} = useHttp();
+    const authData = useRouteLoaderData("root");
+
+    if(authData === 'EXPIRED') {
+        console.log("Token expired!");
     }
 
-    function stopGameHandler() {
-        dispatchState({ type: 'STOP', })
+    const token = authData && authData.token ? authData.token : 'INVALID';
+    const alias = authData && authData.alias ? authData.alias : 'UNKNOWN';
+
+    function addScore() {
+        dispatchState({ type: 'ADD', })
     }
 
-    function resetHandler() {
-        dispatchState({ type: 'RESET' })
+    function setScore() {
+        dispatchState({ type: 'UPDATE', })
+    }
+
+    function replaceScores() {
+        console.log('replaceScores()');
+        // send GET request
+        sendRequest({
+            url: 'http://localhost:4000/game',
+            method: 'GET',
+            headers: {
+                'Content-Type':'application/json',
+                'Authorization': `Bearer ${token}`,
+            }
+        }, (data) => {
+            console.log(data.message);
+            dispatchState({ type: 'REPLACE', data: data.scores });
+        })
     }
 
     const gameContext = {
-        isActive: gameState.isActive,
-        showStats: gameState.showStats,
-        startGame: startGameHandler,
-        stopGame: stopGameHandler,
-        reset: resetHandler
+        scores: gameState,
+        addPlayerScore: addScore,
+        setExistingPlayerScore: setScore,
+        fetchScores: replaceScores
     }
 
     return (

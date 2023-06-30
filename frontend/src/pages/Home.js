@@ -8,8 +8,8 @@ function HomePage() {
         console.log("Token expired!");
     }
 
-    const alias = authData ? authData.alias : 'UNKNOWN';
-    const token = authData ? authData.token : 'INVALID';
+    const alias = authData && authData.alias ? authData.alias : 'UNKNOWN';
+    const token = authData && authData.token ? authData.token : 'INVALID';
 
     const header = <p>Status: {authData ? authData === 'EXPIRED' ? 'Token expired!':`Logged in as ${alias}` : 'Not logged in!'}</p>
     /*  Score keeping data structure: Array of Player objects
@@ -31,6 +31,7 @@ function HomePage() {
             }
         ]
     */
+
     return (
         <Fragment>
             <h1>HomePage (testing)</h1>
@@ -42,16 +43,12 @@ function HomePage() {
                     <li>Scores are to be stored separate from login data (backend side)</li>
                     <li>Each player (differentiated by the account used for login) will have their highscores saved for each timing and window size</li>
                     <li>Therefore, each player can have up to (4 timers) * (3 window sizes) = 12 highscores</li>
-                    <li>Scores are to be fetched initially and 'stored' in local Redux store - more optimal imo</li>
+                    <li><b>Scores are to be fetched initially and 'stored' in local Redux store - more optimal imo</b></li>
                     <li>Backend updates are only performed if a new highscore is achieved</li>
                 </ol>
                 <br />
-                <li>
-                    Re-sizable playing window (works, but doesn't scale with device window size well)
-                </li>
-                <li>Customisable targets</li>
+                <li>Customisable targets (TBC)</li>
                 <li>Customisable xhair - 3 presets for now</li>
-                <li>Sound cue for click + sound cue for hit</li>
                 <li>Use tailwind css - trying</li>
             </ul>
             <TargetWindow player={alias} token={token}/>

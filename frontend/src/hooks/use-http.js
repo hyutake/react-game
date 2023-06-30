@@ -14,8 +14,8 @@ const useHttp = () => {
     */
 	const [error, setError] = useState(null);
 	const sendRequest = useCallback((requestConfig, applyData) => {
-		// console.log(requestConfig);
-		// console.log(applyData);
+		console.log(requestConfig);
+		console.log(applyData);
 		if (requestConfig.method === "GET") {
 			axios
 				.get(requestConfig.url, {
