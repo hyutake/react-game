@@ -34,8 +34,9 @@ export async function action({ request }) {
             }
         );
 
-        // successful response received
-        console.log(response);
+        // successful response received 
+        console.log(response.data);
+        console.log(response.status);
         if(mode === 'login') {
             const {token, alias} = response.data;
     

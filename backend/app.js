@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const authRoutes = require('./routes/auth');
+const gameRoutes = require('./routes/game');
 
 const app = express();
 app.use(bodyParser.json());
@@ -13,8 +14,11 @@ app.use((req, res, next) => {
     next();
   });
 
-// import some route and use it here (for authentication)
+// authentication - login & signup
 app.use('/auth', authRoutes);
+
+// game-related - score-keeping
+app.use('/game', gameRoutes);
 
 console.log("Listening on port 4000!");
 app.listen(4000);

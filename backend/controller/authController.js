@@ -15,7 +15,7 @@ exports.postLogin = async (req, res, next) => {
 	const username = req.body.username;
 	const password = req.body.password;
 
-	// check for valid username 
+	// check for valid username
 	let user;
 	try {
 		user = await checkUsername(username);
@@ -48,7 +48,7 @@ exports.postSignup = async (req, res, next) => {
 	const alias = req.body.alias;
 
 	// get all the current users
-	const storedData = await readData();
+	const storedData = await readData('users.json');
 	// initialise the users array if there were none (i.e., no users yet) 
 	if (!storedData.users) {
 		storedData.users = [];
@@ -69,6 +69,6 @@ exports.postSignup = async (req, res, next) => {
 	const hashedPw = await hash(password, 12);
 
 	storedData.users.push({ username: username, password: hashedPw, alias: alias, id: userId }); // password from ...data will be overwritten with hashedPw
-	await writeData(storedData);
+	await writeData('users.json' ,storedData);
 	res.status(201).json({ message: 'Successfully signed up!' });
 };

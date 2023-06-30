@@ -9,7 +9,7 @@ const KEY = "supersecret";
 exports.createJSONToken = (username) => {
 	return sign({ username }, KEY, { expiresIn: "1h" });
 };
-exports.validateJSONToken = (token) => {
+const validateJSONToken = (token) => {
 	return verify(token, KEY);
 };
 
@@ -19,7 +19,7 @@ exports.isValidPassword = (password, storedPassword) => {
 
 exports.checkUsername = async (username) => {
 	// check if there are even any existing user accounts
-	const storedData = await readData();
+	const storedData = await readData('users.json');
 	if (!storedData.users || storedData.users.length === 0) {
 		throw new NotFoundError("Could not find any users.");
 	}

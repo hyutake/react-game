@@ -2,13 +2,13 @@ const fs = require('node:fs/promises');
 
 // temporary measure to store data - prolly will implement mongoose integration
 
-async function readData() {
-  const data = await fs.readFile('data.json', 'utf8');
+async function readData(filename) {
+  const data = await fs.readFile(filename, 'utf8');
   return JSON.parse(data);
 }
 
-async function writeData(data) {
-  await fs.writeFile('data.json', JSON.stringify(data));
+async function writeData(filename, data) {
+  await fs.writeFile(filename, JSON.stringify(data));
 }
 
 exports.readData = readData;

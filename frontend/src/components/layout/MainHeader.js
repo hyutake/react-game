@@ -12,17 +12,17 @@ function MainHeader() {
 				<ul className="flex gap-4">
 					<li>
 						<Link to='/test'>
-							<button>Test Page</button>
+							<button className="p-1">Test Page</button>
 						</Link>
 					</li>
 					{!token && <li>
 						<Link to="/login/?mode=login">
-							<button>Login</button>
+							<button className="p-1">Login</button>
 						</Link>
 					</li>}
 					{token && <li>
 						<Form action="/logout" method="post">
-							<button>Logout</button>
+							<button className="p-1">Logout</button>
 						</Form>
 					</li>}
 				</ul>

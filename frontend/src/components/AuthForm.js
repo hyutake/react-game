@@ -6,7 +6,7 @@ import {
 	useNavigation,
 } from "react-router-dom";
 
-import classes from "./AuthForm.module.css";
+// import classes from "./AuthForm.module.css";
 
 function AuthForm() {
 	const [searchParams] = useSearchParams();
@@ -20,9 +20,9 @@ function AuthForm() {
 	const isSubmitting = navigation.state === "submitting";
 
 	return (
-		<>
-			<Form method="post" className={classes.form}>
-				<h1>{isLogin ? "Log in" : "Create a new user"}</h1>
+		<> 
+			<Form method="post" className="w-full max-w-2xl my-8 mx-auto">
+				<h1 className="text-4xl font-bold p-4">{isLogin ? "Log in" : "Sign up"}</h1>
 				{actionData && actionData.errors && (
 					<ul>
 						{Object.values(actionData.errors).map((err) => {
@@ -33,28 +33,29 @@ function AuthForm() {
 				{actionData && actionData.message && (
 					<p>{actionData.message}</p>
 				)}
-				{!isLogin && <p>
-					<label htmlFor="alias">Alias</label>
-					<input id="alias" type="text" name="alias" />
+				{!isLogin && <p className="mb-2">
+					<label htmlFor="alias" className="w-full block">Alias</label>
+					<input className="w-full block p-1 rounded" id="alias" type="text" name="alias" />
 				</p>}
-				<p>
-					<label htmlFor="username">Username</label>
-					<input id="username" type="text" name="username" required />
+				<p className="mb-2">
+					<label className="w-full block" htmlFor="username">Username</label>
+					<input className="w-full block p-1 rounded" id="username" type="text" name="username" required />
 				</p>
-				<p>
-					<label htmlFor="password">Password</label>
+				<p className="mb-2">
+					<label className="w-full block" htmlFor="password">Password</label>
 					<input
+						className="w-full block p-1 rounded"
 						id="password"
 						type="password"
 						name="password"
 						required
 					/>
 				</p>
-				<div className={classes.actions}>
-					<Link to={`?mode=${isLogin ? "signup" : "login"}`}>
+				<div className="flex items-center justify-end gap-4">
+					<Link className=" hover:text-amber-300" to={`?mode=${isLogin ? "signup" : "login"}`}>
 						{isLogin ? "Create new user" : "Cancel"}
 					</Link>
-					<button disabled={isSubmitting}>
+					<button className="py-2 px-6 rounded bg-zinc-200 text-zinc-900" disabled={isSubmitting}>
 						{isSubmitting ? "Submitting..." : btnText}
 					</button>
 				</div>

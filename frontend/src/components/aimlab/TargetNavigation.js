@@ -41,16 +41,15 @@ function TargetNavigation({
 	}
 
 	function toggleCrosshairHandler(event) {
-		console.log(event);
 		setCrosshair(event.target.value);
 	}
 
 	return (
-		<nav className={classes.nav}>
-			<ul>
+		<nav className="bg-gray-700 border-b-2 border-white">
+			<ul className="flex p-4 gap-4 justify-between items-center list-none">
 				<li>
 					<button
-						className={classes["nav-reset-btn"]}
+						className='flex items-center justify-center border border-solid rounded-md p-2 border-white'
 						type="button"
 						onClick={resetHandler}
 					>
@@ -58,13 +57,13 @@ function TargetNavigation({
 					</button>
 				</li>
 				<li>
-					<h4>Crosshairs</h4>
-					<div className={classes['btn-row']}>
-						<button className={crosshairId === 1 ? classes['btn-active'] : null} onClick={toggleCrosshairHandler} value={1}>1</button>
-						<button className={crosshairId === 2 ? classes['btn-active'] : null} onClick={toggleCrosshairHandler} value={2}>2</button>
-						<button className={crosshairId === 3 ? classes['btn-active'] : null} onClick={toggleCrosshairHandler} value={3}>3</button>
+					<label className="text-m font-bold">Preset crosshairs</label>
+					<div className='flex flex-row justify-center gap-2 mb-1'>
+						<button className={`border border-solid border-amber-200 ${crosshairId === 1 ? 'bg-amber-200 text-zinc-700' : ''}`} onClick={toggleCrosshairHandler} value='1'>1</button>
+						<button className={`border border-solid border-amber-200 ${crosshairId === 2 ? 'bg-amber-200 text-zinc-700' : ''}`} onClick={toggleCrosshairHandler} value='2'>2</button>
+						<button className={`border border-solid border-amber-200 ${crosshairId === 3 ? 'bg-amber-200 text-zinc-700' : ''}`} onClick={toggleCrosshairHandler} value='3'>3</button>
 					</div>
-					<h4>Targets</h4>
+					<label className="text-m font-bold">Target type</label>
 					<div className={classes['btn-row']}>
 						<button>1</button>
 						<button>2</button>
@@ -72,50 +71,56 @@ function TargetNavigation({
 					</div>
 				</li>
 				<li>
-					<div className={classes["timer-nav"]}>
-						<button type="button" onClick={increaseTimeHandler}>
+					<div className='flex flex-col items-center justify-center'>
+						<button type="button" onClick={increaseTimeHandler} className="flex items-center justify-center">
 							<KeyboardArrowUp />
 						</button>
 						<Timer time={timer} />
-						<button type="button" onClick={decreaseTimeHandler}>
+						<button type="button" onClick={decreaseTimeHandler} className="flex items-center justify-center">
 							<KeyboardArrowDown />
 						</button>
 					</div>
 				</li>
 				<li>
-					<h4>Window size</h4>
-					<form className={classes["window-nav"]}>
-						<label className={classes["window-nav-label"]}>
+					<label className="text-m font-bold">Window size</label>
+					<form className='flex flex-col gap-1'>
+						<label className='flex flex-row items-center gap-2'>
 							<input
 								type="radio"
 								value="s"
 								checked={windowSize === "s"}
 								onChange={changeWindowSizeHandler}
+								className="scale-150 mb-1"
 							/>
 							S
 						</label>
-						<label className={classes["window-nav-label"]}>
+						<label className='flex flex-row items-center gap-2'>
 							<input
 								type="radio"
 								value="m"
 								checked={windowSize === "m"}
 								onChange={changeWindowSizeHandler}
+								className="scale-150 mb-1"
 							/>
 							M
 						</label>
-						<label className={classes["window-nav-label"]}>
+						<label className='flex flex-row items-center gap-2'>
 							<input
 								type="radio"
 								value="l"
 								checked={windowSize === "l"}
 								onChange={changeWindowSizeHandler}
+								className="scale-150 mb-1"
 							/>
 							L
 						</label>
 					</form>
 				</li>
 				<li>
-					<h1>Score: {score}</h1>
+					<div className="p-3 border border-solid rounded-lg border-white">
+						<h1 className="text-xl italic">Score</h1>
+						<p className="text-3xl font-bold">{score}</p>
+					</div>
 				</li>
 			</ul>
 		</nav>

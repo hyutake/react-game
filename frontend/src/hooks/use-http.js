@@ -6,6 +6,7 @@ const useHttp = () => {
         requestConfig: to configure the request that's being sent
         {
             url: '<backend_url>'
+			method: '<http_req_method>'
             data: {<data>}
             headers: {<request_headers>}
         }
@@ -13,6 +14,8 @@ const useHttp = () => {
     */
 	const [error, setError] = useState(null);
 	const sendRequest = useCallback((requestConfig, applyData) => {
+		// console.log(requestConfig);
+		// console.log(applyData);
 		if (requestConfig.method === "GET") {
 			axios
 				.get(requestConfig.url, {
@@ -35,6 +38,16 @@ const useHttp = () => {
             }).catch(err => {
                 console.error(err);
                 setError(err.response.data || 'Error occured in POST request')
+            })
+		} else if (requestConfig.method === "PATCH") {
+			axios.patch(requestConfig.url, requestConfig.data, {
+				headers: requestConfig.headers
+			}).then(response => {
+                console.log(response.data);
+                applyData(response.data);
+            }).catch(err => {
+                console.error(err);
+                setError(err.response.data || 'Error occured in PATCH request')
             })
 		}
 	}, []);

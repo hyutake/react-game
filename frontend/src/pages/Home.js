@@ -11,12 +11,12 @@ function HomePage() {
     const alias = authData ? authData.alias : 'UNKNOWN';
     const token = authData ? authData.token : 'INVALID';
 
-    const header = <p>{authData ? `Logged in as ${alias}` : 'Not logged in!'}</p>
+    const header = <p>Status: {authData ? authData === 'EXPIRED' ? 'Token expired!':`Logged in as ${alias}` : 'Not logged in!'}</p>
     /*  Score keeping data structure: Array of Player objects
         [
             {
                 alias: String
-                s_15: Number
+                s_15: Number    (default: -1)
                 s_30: Number
                 s_45: Number
                 s_60: Number
@@ -41,7 +41,6 @@ function HomePage() {
                 <ol style={{textAlign:'left'}}>
                     <li>Scores are to be stored separate from login data (backend side)</li>
                     <li>Each player (differentiated by the account used for login) will have their highscores saved for each timing and window size</li>
-                    <li><b>Meaning that window size needs to be standardised (maybe small, medium and large)</b></li>
                     <li>Therefore, each player can have up to (4 timers) * (3 window sizes) = 12 highscores</li>
                     <li>Scores are to be fetched initially and 'stored' in local Redux store - more optimal imo</li>
                     <li>Backend updates are only performed if a new highscore is achieved</li>
@@ -51,7 +50,7 @@ function HomePage() {
                     Re-sizable playing window (works, but doesn't scale with device window size well)
                 </li>
                 <li>Customisable targets</li>
-                <li>Customisable xhair (either upload png or live updating? idk)</li>
+                <li>Customisable xhair - 3 presets for now</li>
                 <li>Sound cue for click + sound cue for hit</li>
                 <li>Use tailwind css?</li>
             </ul>

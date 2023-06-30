@@ -1,5 +1,4 @@
-// Purely for the validation of new signups
-
+/* Validation of new signups */
 const isValidText = (text, minLength = 1) => {
     return text && text.trim().length >= minLength
 }
@@ -52,3 +51,5 @@ exports.isValidUser = (user, existingUsers) => {
     isValidPassword(user.password, errors);
     return errors;
 }
+
+/* Validation of game data (TBC) */

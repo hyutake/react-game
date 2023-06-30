@@ -12,8 +12,6 @@
 }
 
 .target-dimensions {
-    display: flex;
-    gap: 10px;
     position: absolute;
     right: 10px;
     bottom: 0;
