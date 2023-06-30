@@ -1,16 +1,25 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useRouteLoaderData } from "react-router-dom";
 import Timer from "../components/aimlab/Timer";
 import useTimer from "../hooks/use-timer";
 import GameContext from "../store/game-context";
 import useHttp from "../hooks/use-http";
 
+import audio from '../assets/audio/golf-shot.mp3';
+
 const TestPage = () => {
     const timerExpireHandler = () => {
         console.log('Timer expired!');
     }
 
-    const { timer, startTimer, stopTimer, resetTimer } = useTimer(5, timerExpireHandler);
+    // const { timer, startTimer, stopTimer, resetTimer } = useTimer(5, timerExpireHandler);
+    const { timer, startTimer, stopTimer, resetTimer } = useTimer(5);
+
+    useEffect(() => {
+        if(timer === 0) {
+            timerExpireHandler();
+        }
+    }, [timer])
 
     function startTimerHandler() {
         startTimer();
@@ -66,27 +75,41 @@ const TestPage = () => {
         }, () => {console.log('applyData()!')})
     }
 
+    // hitsound
+    function playHitSound() {
+        const hitSound = new Audio(audio);
+        hitSound.volume = 0.5;
+        hitSound.playbackRate = 1.25;
+        hitSound.play().catch(err => {
+            console.error(err);
+        })
+    }
+
     return (
         <div>
-            <div>
-                <h2>Timer test</h2>
+            <div className="mb-3 p-2 border rounded border-cyan-50">
+                <h2 className="text-2xl font-bold">Timer test</h2>
                 <Timer time={timer}/>
                 <button onClick={startTimerHandler}>Start timer</button>
                 <button onClick={stopTimerHandler}>Stop timer</button>
                 <button onClick={resetTimerHandler}>Reset timer</button>
             </div>
-            <div>
-                <h2>Context test</h2>
+            <div className="mb-3 p-2 border rounded border-cyan-100">
+                <h2 className="text-2xl font-bold">Context test</h2>
                 <p>{`gameCtx.isActive: ${isActive}`}</p>
                 <p>{`gameCtx.showStats: ${showStats}`}</p>
                 <button onClick={startGameHandler}>Start game</button>
                 <button onClick={stopGameHandler}>Stop game</button>
                 <button onClick={resetGameHandler}>Reset</button>
             </div>
-            <div>
-                <h2>Backend test</h2>
+            <div className="mb-3 p-2 border rounded border-cyan-200">
+                <h2 className="text-2xl font-bold">Backend test</h2>
                 <button onClick={postGameData}>Send game data</button>
                 {error && <p>{error.message}</p>}
+            </div>
+            <div className="mb-3 p-2 border rounded border-cyan-300">
+                <h2 className="text-2xl font-bold">Hitsound test</h2>
+                <button onClick={playHitSound}>Hit sound</button>
             </div>
         </div>
     );

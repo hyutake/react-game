@@ -52,7 +52,7 @@ function HomePage() {
                 <li>Customisable targets</li>
                 <li>Customisable xhair - 3 presets for now</li>
                 <li>Sound cue for click + sound cue for hit</li>
-                <li>Use tailwind css?</li>
+                <li>Use tailwind css - trying</li>
             </ul>
             <TargetWindow player={alias} token={token}/>
         </Fragment>

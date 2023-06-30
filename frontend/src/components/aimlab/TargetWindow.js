@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer } from "react";
+import { useState, useEffect, useReducer, useCallback } from "react";
 
 // import classes from "./TargetWindow.module.css";
 import Target from "./Target";
@@ -7,9 +7,12 @@ import useTimer from "../../hooks/use-timer";
 import useHttp from "../../hooks/use-http";
 
 // cursors
-import xhair1 from '../../assets/xhair1.png';
-import xhair2 from '../../assets/xhair2.png';
-import xhair3 from '../../assets/xhair3.png';
+import xhair1 from '../../assets/image/xhair1.png';
+import xhair2 from '../../assets/image/xhair2.png';
+import xhair3 from '../../assets/image/xhair3.png';
+// hitsound
+import golf_hit from '../../assets/audio/golf-shot.wav';
+import osu_hit from '../../assets/audio/osu-hit.wav';
 
 function statsReducer(state, action) {
 	if (action.type === "SCORE") {
@@ -64,7 +67,7 @@ function TargetWindow(props) {
 	}
 
 	// to handle all the timer functionality
-	const {timer, timerSec, startTimer, resetTimer} = useTimer(30, stopGameHandler);
+	const {timer, timerSec, startTimer, resetTimer} = useTimer(30);
 
 	const [isActive, setIsActive] = useState(false); // to track whether the game is being played currently or not
 	const [showStats, setShowStats] = useState(false); // to 'modify' the content when game is inactive AFTER playing through >= 1 time(s)
@@ -92,8 +95,18 @@ function TargetWindow(props) {
 		}
 	}
 
+	function playHitSound() {
+        const hitSound = new Audio(osu_hit);
+        hitSound.volume = 0.5;
+        hitSound.playbackRate = 1.25;
+        hitSound.play().catch(err => {
+            console.error(err);
+        })
+    }
+
 	function clickTargetHandler() {
 		dispatchStats({ type: "SCORE" });	// update score
+		playHitSound();
 	}
 
 	function resetHandler() {
@@ -104,15 +117,18 @@ function TargetWindow(props) {
 	}
 
 	// From game -> stats
-	function stopGameHandler() {	// this is called ONLY when a game concludes (i.e., timer expires)
+	const stopGameHandler = useCallback(() => {	// this is called ONLY when a game concludes (i.e., timer expires)
 		console.log("Stopping game...");
 		setIsActive(false);
 		setShowStats(true);
 
-		if(props.token === 'INVALID') {	// not logged in - NO SAVING SCORE MECHANIC
+		if(props.token === 'INVALID') {	// not logged in - NO ACTUAL SAVING SCORE MECHANIC
+			console.log('Token is invalid');
 			// BUT, can still reference local scores and "saves score" as props.player = 'UNKNOWN'
+			// Will still 'save' on client side - probably via redux
 
 		} else {	// logged in
+			console.log('Token exists');
 			// check 'local' stats (score + timing) if there is an existing record
 	
 			// if existing, check if there is even a need to update the highscore (i.e., new pb score) + update backend if so (patch)
@@ -120,19 +136,28 @@ function TargetWindow(props) {
 			// if not existing, update backend (post)
 			sendRequest({
 				url: 'http://localhost:4000/game',
+				method: 'POST',
 				data: {
-					score: 0,
-					timer: 30,
+					score: statsState.score,
+					timer: timerSec,
+					windowSize: windowSize,
 					player: props.player
 				},
 				headers: {
 					'Content-Type':'application/json',
-					'Authorisation':`Bearer ${props.token}`
+					'Authorization':`Bearer ${props.token}`
 				}
-			})
+			}, () => {console.log('applyData()')});
 		}
+	}, [props.player, props.token, sendRequest, statsState.score, timerSec, windowSize])
 
-	}
+	// To trigger the stop game function once when timer ends
+	useEffect(() => {
+		if(timer === 0) {
+			console.log('Timer = 0!');
+			stopGameHandler();
+		}
+	}, [timer, stopGameHandler])
 
 	// From start -> game
 	function startGameHandler() {
@@ -210,7 +235,7 @@ function TargetWindow(props) {
 				-- Click anywhere in the window to start --
 			</h1>
 		</div>
-	);
+	); 
 	return (
 		<div className='m-8' style={{width: `${windowWidth}px`}}>
 			<TargetNavigation
