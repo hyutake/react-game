@@ -10,9 +10,9 @@ exports.getScores = async (req, res, next) => {
 	const storedData = await readData("users.json");
 	if (token === "INVALID") {
 		console.log("Unauthorized GET");
-		// Return scores w/o names (names replaced with UNKNOWN or smth)
+		// Return scores w/o names
         const hiddenScores = storedData.game.map((record) => {
-            return {...record, alias: "UNKNOWN"};
+            return {...record, alias: "HIDDEN"};
         })
         res.status(201).json({message, scores: hiddenScores});
 	} else {
@@ -30,6 +30,7 @@ exports.postScore = async (req, res, next) => {
 	const score = req.body.score;
 	const state = req.body.state
     const player = req.body.player;
+    const playerId = req.body.id;
 
 	// get all the current users
 	const storedData = await readData("users.json");
@@ -38,8 +39,8 @@ exports.postScore = async (req, res, next) => {
 		storedData.game = [];
 	}
 
-	// data validation - TODO
-	const errors = isValidRecord({ score, state, player }, storedData.users);
+	// data validation
+	const errors = isValidRecord({ score, state, player, playerId }, storedData.users);
 	if (Object.keys(errors).length > 0) {
 		return res.status(422).json({
 			message: "postScore() failed due to validation errors.",
@@ -47,15 +48,18 @@ exports.postScore = async (req, res, next) => {
 		});
 	}
 
+    // update scores
     const playerExists = storedData.game.find((record) => {
-        return record.alias === player;
+        return record.alias === player && record.id === playerId;
     })
 
     if(playerExists) {
         // if user has existing scores
         const updatedData = storedData.game.map((record) => {
             if(record.alias === player) {
-                return {...record, [state]: score}
+                // only update if new score is HIGHER than old one
+                if(record[state] < score) return {...record, [state]: score};
+                else console.log('Not highscore!')
             }
         })
 
@@ -64,6 +68,7 @@ exports.postScore = async (req, res, next) => {
         // user does not have any existing scores
         storedData.game.push({
             alias: player,
+            id: playerId,
             s_15: 0,
             s_30: 0,
             s_45: 0,
@@ -75,7 +80,7 @@ exports.postScore = async (req, res, next) => {
             l_30: 0,
             l_45: 0,
             l_60: 0,
-            [state]: score
+            [state]: score  // will overwrite the 'default' value of 0 for the particular gamemode
         });
     }
 

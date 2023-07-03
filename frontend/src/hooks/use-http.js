@@ -10,45 +10,55 @@ const useHttp = () => {
             data: {<data>}
             headers: {<request_headers>}
         }
-        applyData: callback function to work with the response data
+        applyData: callback function to work with the response data 
     */
 	const [error, setError] = useState(null);
 	const sendRequest = useCallback((requestConfig, applyData) => {
-		console.log(requestConfig);
-		console.log(applyData);
 		if (requestConfig.method === "GET") {
 			axios
 				.get(requestConfig.url, {
-                    headers: requestConfig.headers
-                })
+					headers: requestConfig.headers,
+				})
 				.then((response) => {
-					console.log(response.data);
-                    applyData(response.data);
+					// console.log(response.data);
+					applyData(response.data);
 				})
 				.catch((err) => {
-                    console.error(err);
-					setError(err.response.data || "Error occured in GET request");
+					console.error(err);
+					setError(
+						err.response.data || "Error occured in GET request"
+					);
 				});
 		} else if (requestConfig.method === "POST") {
-			axios.post(requestConfig.url, requestConfig.data, {
-				headers: requestConfig.headers
-			}).then(response => {
-                console.log(response.data);
-                applyData(response.data);
-            }).catch(err => {
-                console.error(err);
-                setError(err.response.data || 'Error occured in POST request')
-            })
+			axios
+				.post(requestConfig.url, requestConfig.data, {
+					headers: requestConfig.headers,
+				})
+				.then((response) => {
+					console.log(response.data);
+					applyData(response.data);
+				})
+				.catch((err) => {
+					console.error(err);
+					setError(
+						err.response.data || "Error occured in POST request"
+					);
+				});
 		} else if (requestConfig.method === "PATCH") {
-			axios.patch(requestConfig.url, requestConfig.data, {
-				headers: requestConfig.headers
-			}).then(response => {
-                console.log(response.data);
-                applyData(response.data);
-            }).catch(err => {
-                console.error(err);
-                setError(err.response.data || 'Error occured in PATCH request')
-            })
+			axios
+				.patch(requestConfig.url, requestConfig.data, {
+					headers: requestConfig.headers,
+				})
+				.then((response) => {
+					console.log(response.data);
+					applyData(response.data);
+				})
+				.catch((err) => {
+					console.error(err);
+					setError(
+						err.response.data || "Error occured in PATCH request"
+					);
+				});
 		}
 	}, []);
 

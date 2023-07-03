@@ -5,6 +5,8 @@ export function logoutAction() {
     if(proceed) {
         localStorage.removeItem('token');
         localStorage.removeItem('expiration');
+        localStorage.removeItem('id');
+        localStorage.removeItem('alias');
     }
     return redirect('/');
 }

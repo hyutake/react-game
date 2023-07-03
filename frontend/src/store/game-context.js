@@ -4,7 +4,7 @@ const GameContext = React.createContext({
 	scores: [],
 	addPlayerScore: () => {},
 	setExistingPlayerScore: () => {},
-	fetchScores: () => {}
+	replaceScores: () => {}
 });
 
 export default GameContext;

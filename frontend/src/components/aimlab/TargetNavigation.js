@@ -8,40 +8,53 @@ import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 function TargetNavigation({
 	score,
 	onReset,
-	timer,
-	setTimer,
-	windowSize,
-	setWindow,
-	crosshairId,
-	setCrosshair,
+	timer, setTimer,
+	gameState,
+	setGameState,
+	crosshairId,setCrosshair,
+	targetColorId, setTargetColor
 }) {
+	const windowSize = gameState.split('_')[0];
+	const gameTime = parseInt(gameState.split('_')[1]);
+
 	function resetHandler() {
 		onReset();
 	}
 
 	function increaseTimeHandler() {
-		if (timer < 60000) {
-			setTimer(timer / 1000 + 15);
+		if (gameTime < 60) {
+			onReset();	// if the game is running, stop it
+			const newTime = gameTime + 15;
+			setGameState(`${windowSize}_${newTime}`);
+			setTimer(newTime);
 		} else {
 			console.log("Timer should not exceed 60 seconds!");
 		}
 	}
 
 	function decreaseTimeHandler() {
-		if (timer > 15000) {
-			setTimer(timer / 1000 - 15);
+		if (gameTime > 15) {
+			onReset();	// if the game is running, stop it
+			const newTime = gameTime - 15;
+			setGameState(`${windowSize}_${newTime}`);
+			setTimer(newTime);
 		} else {
 			console.log("Timer should not be lower than 15 seconds!");
 		}
 	}
 
 	function changeWindowSizeHandler(event) {
-		setWindow(event.target.value);
+		const newWindowSize = event.target.value;
+		setGameState(`${newWindowSize}_${gameTime}`);
 		onReset();
 	}
 
 	function toggleCrosshairHandler(event) {
 		setCrosshair(event.target.value);
+	}
+
+	function toggleColorHandler(event) {
+		setTargetColor(event.target.value);
 	}
 
 	return (
@@ -63,11 +76,12 @@ function TargetNavigation({
 						<button className={`border border-solid border-amber-200 ${crosshairId === 2 ? 'bg-amber-200 text-zinc-700' : ''}`} onClick={toggleCrosshairHandler} value='2'>2</button>
 						<button className={`border border-solid border-amber-200 ${crosshairId === 3 ? 'bg-amber-200 text-zinc-700' : ''}`} onClick={toggleCrosshairHandler} value='3'>3</button>
 					</div>
-					<label className="text-m font-bold">Target type</label>
+					<label className="text-m font-bold">Target color</label>
 					<div className={classes['btn-row']}>
-						<button>1</button>
-						<button>2</button>
-						<button>3</button>
+						<button className={`border border-solid border-amber-200 ${targetColorId === 'r' ? 'bg-amber-200 text-zinc-700' : ''}`} onClick={toggleColorHandler} value='r'>R</button>
+						<button className={`border border-solid border-amber-200 ${targetColorId === 'g' ? 'bg-amber-200 text-zinc-700' : ''}`} onClick={toggleColorHandler} value='g'>G</button>
+						<button className={`border border-solid border-amber-200 ${targetColorId === 'b' ? 'bg-amber-200 text-zinc-700' : ''}`} onClick={toggleColorHandler} value='b'>B</button>
+						<button className={`border border-solid border-amber-200 ${targetColorId === 'y' ? 'bg-amber-200 text-zinc-700' : ''}`} onClick={toggleColorHandler} value='y'>Y</button>
 					</div>
 				</li>
 				<li>

@@ -5,7 +5,7 @@ import useTimer from "../hooks/use-timer";
 import GameContext from "../store/game-context";
 import useHttp from "../hooks/use-http";
 
-import audio from "../assets/audio/golf-shot.mp3";
+import audio from "../assets/audio/osu-hit.wav";
 
 const TestPage = () => {
 	const timerExpireHandler = () => {

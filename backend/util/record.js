@@ -43,10 +43,18 @@ const isValidPlayer = (alias, existingUsers, errors) => {
     }
 }
 
+const isValidPlayerID = (id, errors) => {
+    console.log('Checking player id...');
+    if(id === '-1') {
+        errors.playerId = 'Invalid or expired player id';
+    };
+}
+
 exports.isValidRecord = (record, existingUsers) => {
     const errors = {};
     isValidScore(record.score, errors);
     isValidGameState(record.state, errors);
     isValidPlayer(record.player, existingUsers, errors);
+    isValidPlayerID(record.playerId, errors);
     return errors;
 }

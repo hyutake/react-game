@@ -2,7 +2,7 @@
 
 function Target(props) {
     return (
-        <div onClick={props.onClick} className='absolute w-12 h-12 rounded-full bg-cyan-400' style={{left: props.position.x, top: props.position.y}}>
+        <div onClick={props.onClick} className={props.className} style={{left: props.position.x, top: props.position.y}}>
         </div>
     );
 }

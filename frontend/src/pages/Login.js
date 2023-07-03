@@ -38,14 +38,16 @@ export async function action({ request }) {
         console.log(response.data);
         console.log(response.status);
         if(mode === 'login') {
-            const {token, alias} = response.data;
+            // id needed to uniquely identify score entries when aliases are 'HIDDEN'
+            const {token, alias, id} = response.data;
     
             // store token, expiry & alias
             localStorage.setItem("token", token);
             const expiration = new Date();
             expiration.setHours(expiration.getHours() + 1); // 1 hr expiration time
             localStorage.setItem("expiration", expiration);
-            localStorage.setItem('alias', alias)
+            localStorage.setItem('alias', alias);
+            localStorage.setItem('id', id);
         } else {    // mode === 'signup'
             console.log(response.data.message);
             return redirect('/login/?mode=login');

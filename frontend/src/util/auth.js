@@ -4,17 +4,19 @@ export function getAuthToken() {
     const token = localStorage.getItem('token');
     if(!token) return null;
 
-    const alias = localStorage.getItem('alias');
+    const alias = localStorage.getItem('alias');    // alias does not get removed even after logout, but a new login will overwrite it
+    const id = localStorage.getItem('id'); 
     const tokenDuration = getTokenDuration();
 
-    
     if(tokenDuration < 0) {
-        return 'EXPIRED';
+        // both token and id will change when token expires, alias will not change
+        return {token: 'EXPIRED', alias: alias, id: '-1'};
     }
 
     return {
         token: token,
-        alias: alias
+        alias: alias,
+        id: id
     };
 }
 

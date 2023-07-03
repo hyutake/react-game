@@ -4,7 +4,7 @@ import { Link, Form, useRouteLoaderData } from "react-router-dom";
 function MainHeader() {
 	const token = useRouteLoaderData('root');
 	return (
-		<header className="max-w-7xl mx-auto p-8 flex justify-between">
+		<header className="max-w-7xl mx-auto p-8 flex justify-between border rounded-xl border-gray-300">
 			<h1 className="text-4xl font-bold">
 				<Link to="/">リアクト ゲイム</Link>
 			</h1>

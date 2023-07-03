@@ -38,6 +38,8 @@ function TargetWindow(props) {
 	// to store the x y positions of the target
 	const [targetPos, setTargetPos] = useState({});
 
+	const [windowSize, time] = props.state.split('_');
+	const gameTime = parseInt(time);
 	// to handle window sizing (string mapped to some x by y value) - 16:9 aspect ratio
 	// so in theory I only need to track just 1 value and then perform some calculations to get the other
 	/*
@@ -45,7 +47,7 @@ function TargetWindow(props) {
 		m: 960 x 540
 		l: 1280 x 720
 	*/
-	const [windowSize, setWindowSize] = useState('s');
+	// const [windowSize, setWindowSize] = useState('s');
 	let windowWidth, windowHeight;
 	switch(windowSize) {
 		case 'm':
@@ -66,13 +68,16 @@ function TargetWindow(props) {
 	}
 
 	// to handle all the timer functionality
-	const {timer, timerSec, startTimer, resetTimer} = useTimer(30);
+	const {timer, timerSec, startTimer, resetTimer} = useTimer(gameTime);
 
 	const [isActive, setIsActive] = useState(false); // to track whether the game is being played currently or not
 	const [showStats, setShowStats] = useState(false); // to 'modify' the content when game is inactive AFTER playing through >= 1 time(s)
 
 	// to track choice of xhair -> Object: { id: number, style: string }
-	const [crosshair, setCrosshair] = useState({id: 1, style: `url(${xhair1}) 16 16, auto`});
+	const [crosshair, setCrosshair] = useState({id: 1, style: `url(${xhair1}) 10 10, auto`});
+
+	// to track color style for target
+	const [targetColor, setTargetColor] = useState({id: 'b', style: 'bg-cyan-400'});
 
 	const { error, sendRequest } = useHttp();
 
@@ -126,6 +131,8 @@ function TargetWindow(props) {
 			// BUT, can still reference local scores and "saves score" as props.player = 'UNKNOWN'
 			// Will still 'save' on client side - probably via redux
 
+		} else if(props.token === 'EXPIRED') {
+			console.log('Token has expired');
 		} else {	// logged in
 			console.log('Token exists');
 			// check 'local' stats (score + timing) if there is an existing record
@@ -139,7 +146,8 @@ function TargetWindow(props) {
 				data: {
 					score: statsState.score,
 					state: `${windowSize}_${timerSec}`,
-					player: props.player
+					player: props.player,
+					id: props.playerId
 				},
 				headers: {
 					'Content-Type':'application/json',
@@ -147,28 +155,22 @@ function TargetWindow(props) {
 				}
 			}, () => {console.log('applyData()')});
 		}
-	}, [props.player, props.token, sendRequest, statsState.score, timerSec, windowSize])
+	}, [props.player, props.playerId, props.token, sendRequest, statsState.score, timerSec, windowSize])
 
 	// To trigger the stop game function once when timer ends
 	useEffect(() => {
 		if(timer === 0) {
 			console.log('Timer = 0!');
 			stopGameHandler();
+			resetTimer();	// resetTimer is necessary so that this won't trigger again
 		}
-	}, [timer, stopGameHandler])
+	}, [timer, stopGameHandler, resetTimer])
 
 	// From start -> game
 	function startGameHandler() {
 		console.log("Starting game...");
-		resetHandler(); // reset the score
 		setIsActive(true); // set {targetDisplay} to show the game
 		startTimer();
-	}
-
-	// From stats -> start
-	function returnToStartGame() {
-		setShowStats(false);
-		resetTimer();
 	}
 
 	// id will be the same 'id' stored in the crosshair state
@@ -181,7 +183,7 @@ function TargetWindow(props) {
 			case '1':
 				setCrosshair({
 					id: 1,
-					style: `url(${xhair1}) 16 16, auto`
+					style: `url(${xhair1}) 10 10, auto`
 				})
 				break;
 			case '2':
@@ -201,6 +203,41 @@ function TargetWindow(props) {
 		}
 	}
 
+	function updateTargetColor(id) {
+		if(id === targetColor.id) {	// xhair already in use
+			console.log('Target color already set!');
+			return;
+		}
+		switch(id) {
+			case 'r':
+				setTargetColor({
+					id: id,
+					style: `bg-red-400`
+				})
+				break;
+			case 'g':
+				setTargetColor({
+					id: id,
+					style: 'bg-green-400'
+				})
+				break;
+			case 'b':
+				setTargetColor({
+					id: id,
+					style: `bg-cyan-400`
+				})
+				break;
+			case 'y':
+				setTargetColor({
+					id: id,
+					style: `bg-yellow-400`
+				})
+				break;
+			default:
+				console.log('Invalid id!');
+		}
+	}
+
 	// Shows the pixel dimensions of the game
 	const windowDimensions = 
 		<div className='absolute right-2 bottom-0'>
@@ -210,7 +247,7 @@ function TargetWindow(props) {
 
 	// Either the 'game' is shown, or the start/end screen
 	const targetDisplay = isActive ? (
-		<Target onClick={clickTargetHandler} position={targetPos} />
+		<Target className={`absolute w-12 h-12 rounded-full ${targetColor.style}`}onClick={clickTargetHandler} position={targetPos} />
 	) : showStats ? (
 		<div className='w-full h-full flex flex-col justify-center items-center'>
 			<h3>Game state: {windowSize}_{timerSec}</h3>
@@ -223,7 +260,7 @@ function TargetWindow(props) {
 				</li>
 				<li>Hits per sec: {(statsState.score / timerSec).toFixed(2)}</li>
 			</ul>
-			<button type="button" onClick={returnToStartGame} className="border-none py-1 px-4">
+			<button type="button" onClick={resetHandler} className="border-none py-1 px-4">
 				-- Click here to dismiss --
 			</button>
 		</div>
@@ -241,10 +278,12 @@ function TargetWindow(props) {
 				onReset={resetHandler}
 				timer={timer}
 				setTimer={resetTimer}
-				windowSize={windowSize}
-				setWindow={setWindowSize}
+				gameState={props.state}
+				setGameState={props.updateState}
 				crosshairId={crosshair.id}
 				setCrosshair={updateCrosshair}
+				targetColorId={targetColor.id}
+				setTargetColor={updateTargetColor}
 			/>
 			<div
 				className={`flex relative items-center justify-center ${

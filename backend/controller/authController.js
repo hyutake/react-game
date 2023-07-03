@@ -37,7 +37,7 @@ exports.postLogin = async (req, res, next) => {
 	// login attempt is valid - return a token
 	console.log(`[ADMIN]: user '${username}' has logged in successfully`);
 	const token = createJSONToken(username);
-	res.json({ token, alias: user.alias });
+	res.json({ token, alias: user.alias, id: user.id });
 };
 
 exports.postSignup = async (req, res, next) => {

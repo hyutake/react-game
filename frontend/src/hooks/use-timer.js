@@ -5,6 +5,10 @@ import { useState, useEffect } from "react";
 */
 // initialTime: time in seconds
 const useTimer = (initialTime) => {
+	// check for correct input
+	if(isNaN(initialTime)) {
+		console.log('Invalid time passed to useTimer()!');
+	}
 	// keeps track of the LATEST initial timer value used (in seconds)
 	const [timerSec, setTimerSec] = useState(initialTime);
 	// keeps track of the timer value (i.e. the countdown) in ms
