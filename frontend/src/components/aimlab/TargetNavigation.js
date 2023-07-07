@@ -15,7 +15,7 @@ function TargetNavigation({
 	targetColorId, setTargetColor
 }) {
 	const windowSize = gameState.split('_')[0];
-	const gameTime = parseInt(gameState.split('_')[1]);
+	const gameTime = parseInt(gameState.split('_')[1]);	// gameTime should be int
 
 	function resetHandler() {
 		onReset();

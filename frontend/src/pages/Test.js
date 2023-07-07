@@ -1,13 +1,14 @@
-import { useContext, useEffect } from "react";
-import { useRouteLoaderData } from "react-router-dom";
+import { useEffect } from "react";
 import Timer from "../components/aimlab/Timer";
 import useTimer from "../hooks/use-timer";
-import GameContext from "../store/game-context";
 import useHttp from "../hooks/use-http";
 
 import audio from "../assets/audio/osu-hit.wav";
+import TestContext from "../components/TestContext";
+import { useAuthContext } from "../store/auth-context";
 
 const TestPage = () => {
+	const authCtx = useAuthContext();
 	const timerExpireHandler = () => {
 		console.log("Timer expired!");
 	};
@@ -33,60 +34,53 @@ const TestPage = () => {
 		resetTimer();
 	}
 
-	const gameCtx = useContext(GameContext);
-	const isActive = gameCtx.isActive;
-	const showStats = gameCtx.showStats;
-
-	function startGameHandler() {
-		gameCtx.startGame();
-	}
-
-	function stopGameHandler() {
-		gameCtx.stopGame();
-	}
-
-	function resetGameHandler() {
-		gameCtx.reset();
-	}
-
 	const { error, sendRequest } = useHttp();
-	const authData = useRouteLoaderData("root");
-	const authIndicator = (
-		<h1 className="text-3xl font-bold mb-4">
-			{authData
-				? authData === "EXPIRED"
-					? "Token Expired!"
-					: `Logged in as ${authData.alias}`
-				: "Not logged in!"}
-		</h1>
-	);
-	if (!authData) console.log("Not logged in - can't test backend!");
-	else if (authData === "EXPIRED") {
-		console.log("Token expired!");
-	}
 
-	const alias = authData ? authData.alias : "UNKNOWN";
-	const token = authData ? authData.token : "INVALID";
+	const isLoggedIn = authCtx.user !== null;
+	const authIndicator = (
+		<div className="flex flex-row justify-center items-center">
+			<p className="my-4 mx-4 flex flex-col">
+				{authCtx.user && <span>authCtx.user.id: {authCtx.user.id}</span>}
+			</p>
+		</div>
+	);
 
 	function requestGameData() {
 		sendRequest(
 			{
 				url: "http://localhost:4000/game",
 				method: "GET",
-				data: {
-					score: 69,
-					gameState: "m_15",
-					player: alias,
-				},
 				headers: {
 					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
+					Authorization: `Bearer ${authCtx.user.token}`,
 				},
 			},
-			() => {
-				console.log("applyData()!");
+			(data) => {
+				console.log(data);
 			}
 		);
+	}
+
+	/* AuthContext */
+	// signup
+	function testSignup() {
+		authCtx
+			.signup({ username: "tester", password: "test123", alias: "TEST" })
+			.catch((err) => console.error(err));
+	}
+
+	// login
+	function testLogin() {
+		authCtx
+			.login({ username: "tester", password: "test123" })
+			.catch((err) => {
+				console.error(err);
+			});
+	}
+
+	// logout
+	function testLogout() {
+		authCtx.logout();
 	}
 
 	// hitsound
@@ -100,7 +94,7 @@ const TestPage = () => {
 	}
 
 	return (
-		<div>
+		<div className="max-w-5xl">
 			{authIndicator}
 			<div className="mb-3 p-2 border rounded border-cyan-50">
 				<h2 className="text-2xl font-bold">Timer test</h2>
@@ -110,21 +104,37 @@ const TestPage = () => {
 				<button onClick={resetTimerHandler}>Reset timer</button>
 			</div>
 			<div className="mb-3 p-2 border rounded border-cyan-100">
-				<h2 className="text-2xl font-bold">Context test</h2>
-				<p>{`gameCtx.isActive: ${isActive}`}</p>
-				<p>{`gameCtx.showStats: ${showStats}`}</p>
-				<button onClick={startGameHandler}>Start game</button>
-				<button onClick={stopGameHandler}>Stop game</button>
-				<button onClick={resetGameHandler}>Reset</button>
-			</div>
-			<div className="mb-3 p-2 border rounded border-cyan-200">
 				<h2 className="text-2xl font-bold">Backend test</h2>
 				<button onClick={requestGameData}>Request game data</button>
 				{error && <p>{error.message}</p>}
 			</div>
-			<div className="mb-3 p-2 border rounded border-cyan-300">
+			<div className="mb-3 p-2 border rounded border-cyan-200">
 				<h2 className="text-2xl font-bold">Hitsound test</h2>
 				<button onClick={playHitSound}>Hit sound</button>
+			</div>
+			<TestContext
+				className="mb-3 p-2 border rounded border-cyan-300"
+				isLoggedIn={isLoggedIn}
+			/>
+			<div className="mb-3 p-2 border rounded border-cyan-400">
+				<h2 className="text-2xl font-bold">AuthContext test</h2>
+				{authCtx.error && (
+					<div>
+						<p>{authCtx.error.message}</p>
+						<ul>
+							{Object.values(authCtx.error.errors).map((err) => {
+								return (
+									<li className="italic text-sm" key={err}>
+										{err}
+									</li>
+								);
+							})}
+						</ul>
+					</div>
+				)}
+				<button onClick={testSignup}>Sign up as tester</button>
+				<button onClick={testLogin}>Login as tester</button>
+				<button onClick={testLogout}>Logout</button>
 			</div>
 		</div>
 	);

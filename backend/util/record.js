@@ -3,7 +3,7 @@ const isNumber = (value) => {
 }
 
 const isValidScore = (score, error) => {
-    console.log('Checking score...');
+    console.log('Checking score type...');
     if(!isNumber(score)) {
         error.score = `Invalid score of ${score}`;
     }
@@ -24,25 +24,6 @@ const isValidGameState = (state, error) => {
     }
 }
 
-const isValidPlayer = (alias, existingUsers, errors) => {
-	console.log('Checking alias...');
-    if (existingUsers.length >= 1) {
-		// if there is at least 1 existing user
-		// check if the alias is already in-use
-		const user = existingUsers.find(
-			(user) => user.alias === alias
-		);
-		if (user) {
-            // console.log(user);
-            console.log('Found matching alias!');
-        } else {
-            errors.alias = `Player ${alias} cannot be found!`;
-        }
-	} else {
-        console.log('No existing users - invalid player!');
-    }
-}
-
 const isValidPlayerID = (id, errors) => {
     console.log('Checking player id...');
     if(id === '-1') {
@@ -50,11 +31,10 @@ const isValidPlayerID = (id, errors) => {
     };
 }
 
-exports.isValidRecord = (record, existingUsers) => {
+exports.isValidRecord = (record) => {
     const errors = {};
     isValidScore(record.score, errors);
     isValidGameState(record.state, errors);
-    isValidPlayer(record.player, existingUsers, errors);
     isValidPlayerID(record.playerId, errors);
     return errors;
 }

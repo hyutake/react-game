@@ -21,7 +21,10 @@ exports.postLogin = async (req, res, next) => {
 		user = await checkUsername(username);
 	} catch (err) {
 		console.log("[ADMIN]: Invalid username detected");
-		return res.status(401).json({ message: "Authentication failed." });
+		return res.status(422).json({ 
+			message: "Invalid credentials.",
+			errors: { credentials: "Invalid username or password entered." }
+		});
 	}
 
 	// check for valid password
@@ -30,14 +33,14 @@ exports.postLogin = async (req, res, next) => {
 		console.log("[ADMIN]: Invalid password detected");
 		return res.status(422).json({
 			message: "Invalid credentials.",
-			errors: { credentials: "Invalid email or password entered." },
+			errors: { credentials: "Invalid username or password entered." },
 		});
 	}
 
 	// login attempt is valid - return a token
 	console.log(`[ADMIN]: user '${username}' has logged in successfully`);
 	const token = createJSONToken(username);
-	res.json({ token, alias: user.alias, id: user.id });
+	res.json({ token, id: user.id });
 };
 
 exports.postSignup = async (req, res, next) => {
@@ -74,6 +77,29 @@ exports.postSignup = async (req, res, next) => {
 		alias: alias,
 		id: userId,
 	}); 
+
+	// initialise the game scores of new accounts
+	if(!storedData.game) {
+		storedData.game = [];
+	}
+
+	storedData.game.push({
+		alias: alias,
+		id: userId,
+		s_15: 0,
+        s_30: 0,
+        s_45: 0,
+        s_60: 0,
+        m_15: 0,
+        m_30: 0,
+		m_45: 0,
+        m_60: 0,
+        l_15: 0,
+        l_30: 0,
+        l_45: 0,
+        l_60: 0,
+	})
+
 	await writeData("users.json", storedData);
 	res.status(201).json({ message: "Successfully signed up!" });
 };

@@ -3,44 +3,28 @@ const {readData, writeData} = require('../util/data');
 const {isValidRecord} = require('../util/record');
 
 exports.getScores = async (req, res, next) => {
-	const token = req.headers.authorization.split(" ")[1];
-    let message = "Unauthorized getScores called!";
-
     // get all the current users
 	const storedData = await readData("users.json");
-	if (token === "INVALID") {
-		console.log("Unauthorized GET");
-		// Return scores w/o names
-        const hiddenScores = storedData.game.map((record) => {
-            return {...record, alias: "HIDDEN"};
-        })
-        res.status(201).json({message, scores: hiddenScores});
-	} else {
-		console.log("Authorized GET");
-        message = "Authorized getScores called!"
-		// Return scores w/ their actual names
-        res.status(201).json({message, scores: storedData.game});
-	}
+	res.status(201).json({message: "getScores called!", records: storedData.game});
 };
 
 exports.postScore = async (req, res, next) => {
-	// req.body contains { score: Int, timer: Int, windowSize: Char, player: String }
+	// req.body contains { score: number, state: string, id: string }
 	console.log(req.body);
 
 	const score = req.body.score;
 	const state = req.body.state
-    const player = req.body.player;
-    const playerId = req.body.id;
+    const playerId = req.body.playerId;
 
 	// get all the current users
 	const storedData = await readData("users.json");
-	// initialise the users array if there were none (i.e., no users yet)
+	// initialise the users array if there were none (i.e., no users yet) -- technically impossible since post method is only triggered for a signed in user
 	if (!storedData.game) {
 		storedData.game = [];
 	}
 
-	// data validation
-	const errors = isValidRecord({ score, state, player, playerId }, storedData.users);
+	// data validation 
+	const errors = isValidRecord({ score, state, playerId });
 	if (Object.keys(errors).length > 0) {
 		return res.status(422).json({
 			message: "postScore() failed due to validation errors.",
@@ -49,40 +33,19 @@ exports.postScore = async (req, res, next) => {
 	}
 
     // update scores
-    const playerExists = storedData.game.find((record) => {
-        return record.alias === player && record.id === playerId;
+	// frontend side should already have checked once - this is insurance
+    const updatedData = storedData.game.map((record) => {
+        if(record.id === playerId) {
+            if(record[state] < score) return {...record, [state]: score};
+            else {
+                console.log('Not highscore!');
+                return record;
+            }
+        }
+		return record;
     })
 
-    if(playerExists) {
-        // if user has existing scores
-        const updatedData = storedData.game.map((record) => {
-            if(record.alias === player) {
-                // only update if new score is HIGHER than old one
-                if(record[state] < score) return {...record, [state]: score};
-                else console.log('Not highscore!')
-            }
-        })
-
-        storedData.game = updatedData;
-    } else {
-        // user does not have any existing scores
-        storedData.game.push({
-            alias: player,
-            id: playerId,
-            s_15: 0,
-            s_30: 0,
-            s_45: 0,
-            s_60: 0,
-            m_15: 0,
-            m_30: 0,
-            m_60: 0,
-            l_15: 0,
-            l_30: 0,
-            l_45: 0,
-            l_60: 0,
-            [state]: score  // will overwrite the 'default' value of 0 for the particular gamemode
-        });
-    }
+    storedData.game = updatedData;
 
 	await writeData("users.json", storedData);
 	res.status(201).json({ message: "postScore() success!" });

@@ -5,6 +5,8 @@ import Target from "./Target";
 import TargetNavigation from "./TargetNavigation";
 import useTimer from "../../hooks/use-timer";
 import useHttp from "../../hooks/use-http";
+import { useScoreContext } from "../../store/score-context";
+import { useAuthContext } from "../../store/auth-context";
 
 // cursors
 import xhair1 from '../../assets/image/xhair1.png';
@@ -30,13 +32,13 @@ function statsReducer(state, action) {
 }
 
 function TargetWindow(props) {
+	const {playerScore, setPlayerScore} = useScoreContext();
+	const {user} = useAuthContext();
+
 	const [statsState, dispatchStats] = useReducer(statsReducer, {
 		score: 0,
 		totalClicks: 0,
 	});
-
-	// to store the x y positions of the target
-	const [targetPos, setTargetPos] = useState({});
 
 	const [windowSize, time] = props.state.split('_');
 	const gameTime = parseInt(time);
@@ -67,31 +69,129 @@ function TargetWindow(props) {
 		return Math.floor(width / aspectRatio[0]) * aspectRatio[1];
 	}
 
+	// to store the x y positions of the target
+	const [targetPos, setTargetPos] = useState({
+		x: Math.floor((windowWidth - 50) / 2),
+		y: Math.floor((windowWidth - 50) / 2),
+	});
+
 	// to handle all the timer functionality
 	const {timer, timerSec, startTimer, resetTimer} = useTimer(gameTime);
 
 	const [isActive, setIsActive] = useState(false); // to track whether the game is being played currently or not
 	const [showStats, setShowStats] = useState(false); // to 'modify' the content when game is inactive AFTER playing through >= 1 time(s)
 
-	// to track choice of xhair -> Object: { id: number, style: string }
+	// to track choice of xhair -> Object: { id: number, style: string } - default is static w/ gap
 	const [crosshair, setCrosshair] = useState({id: 1, style: `url(${xhair1}) 10 10, auto`});
 
-	// to track color style for target
-	const [targetColor, setTargetColor] = useState({id: 'b', style: 'bg-cyan-400'});
+	// to track color style for target - default is red
+	const [targetColor, setTargetColor] = useState({id: 'r', style: 'bg-red-400'});
 
 	const { error, sendRequest } = useHttp();
 
-	// to trigger the repositioning of the target
+	/* Re-positioning of target */
+	// Game type 1: Random re-positioning
+	// useEffect(() => {
+	// 	const maxLeft = windowWidth - 50;
+	// 	const maxTop = windowHeight - 50;
+	// 	setTargetPos({
+	// 		x: Math.random() * maxLeft,
+	// 		y: Math.random() * maxTop,
+	// 	});
+	// }, [statsState.score, windowWidth, windowHeight]);
+
+	// Game type 2: Alternate between random and center position
+	// useEffect(() => {
+	// 	const maxLeft = windowWidth - 50;
+	// 	const maxTop = windowHeight - 50;
+	// 	if(statsState.score % 2 === 0) {	// score is divisible by 2
+	// 		// center spawn
+	// 		setTargetPos({
+	// 			x: Math.floor(maxLeft / 2),
+	// 			y: Math.floor(maxTop / 2),
+	// 		})
+	// 	} else {
+	// 		// random spawn
+	// 		setTargetPos({
+	// 			x: Math.random() * maxLeft,
+	// 			y: Math.random() * maxTop,
+	// 		});
+	// 	}
+	// },[statsState.score, windowWidth, windowHeight])
+
+	// Game type 3: Random re-positioning, but higher % chance of generating a closer position
 	useEffect(() => {
-		// const containerWidth = targetWindowRef.current.offsetWidth;
-		// const containerHeight = targetWindowRef.current.offsetHeight;
 		const maxLeft = windowWidth - 50;
 		const maxTop = windowHeight - 50;
-		setTargetPos({
-			x: Math.random() * maxLeft,
-			y: Math.random() * maxTop,
-		});
-	}, [statsState.score, windowWidth, windowHeight]);
+
+		// configuring spawns
+		const idealSpawnRange = 150;	// furthest a target is allowed to spawn
+		let isAdd = Math.random() < 0.5;	// randomize whether its a '+' or '-'
+		const maxAttemptsBeforeGivingUp = 5;	// number of random gen. loops allowed before giving up and just doing random repos
+
+		setTargetPos(prevPos => {
+			let attemptCount = 1;
+			// generate x pos
+			let newX = prevPos.x + Math.random() * idealSpawnRange;
+			// generate y pos
+			let newY = prevPos.y + Math.random() * idealSpawnRange;
+			if(isAdd) {	// increase value of original pos
+				while(newX >= maxLeft || newX <= 0) {	// newX should be within [0, maxLeft]
+					attemptCount++;
+					if(attemptCount > maxAttemptsBeforeGivingUp) {
+						console.log("Giving up! Generating random pos instead!");
+						return {
+							x: Math.random() * maxLeft,
+							y: Math.random() * maxTop,
+						};
+					}
+					newX = prevPos.x + Math.random() * idealSpawnRange;
+				}
+				while(newY >= maxTop || newY <= 0) {	// newY should be within [0, maxTop]
+					attemptCount++;
+					if(attemptCount > maxAttemptsBeforeGivingUp) {
+						console.log("Giving up! Generating random pos instead!");
+						return {
+							x: Math.random() * maxLeft,
+							y: Math.random() * maxTop,
+						};
+					}
+					newY = prevPos.y + Math.random() * idealSpawnRange;
+				}
+				return {
+					x: newX,
+					y: newY
+				}
+			} else { // decrease value of original pos
+				while(newX >= maxLeft || newX <= 0) {	// newX should be within [0, maxLeft]
+					attemptCount++;
+					if(attemptCount > maxAttemptsBeforeGivingUp) {
+						console.log("Giving up! Generating random pos instead!");
+						return {
+							x: Math.random() * maxLeft,
+							y: Math.random() * maxTop,
+						};
+					}
+					newX = prevPos.x - Math.random() * idealSpawnRange;
+				}
+				while(newY >= maxTop || newY <= 0) {	// newY should be within [0, maxTop]
+					attemptCount++;
+					if(attemptCount > maxAttemptsBeforeGivingUp) {
+						console.log("Giving up! Generating random pos instead!");
+						return {
+							x: Math.random() * maxLeft,
+							y: Math.random() * maxTop,
+						};
+					}
+					newY = prevPos.y - Math.random() * idealSpawnRange;
+				}
+				return {
+					x: newX,
+					y: newY
+				}
+			}
+		})
+	},[statsState.score, windowWidth, windowHeight])
 
 	function clickWindowHandler() {
 		if (isActive) {
@@ -101,7 +201,7 @@ function TargetWindow(props) {
 
 	function playHitSound() {
         const hitSound = new Audio(osu_hit);
-        hitSound.volume = 0.5;
+        hitSound.volume = 0.7;
         hitSound.playbackRate = 1.25;
         hitSound.play().catch(err => {
             console.error(err);
@@ -125,46 +225,36 @@ function TargetWindow(props) {
 		console.log("Stopping game...");
 		setIsActive(false);
 		setShowStats(true);
+	}, [])
 
-		if(props.token === 'INVALID') {	// not logged in - NO ACTUAL SAVING SCORE MECHANIC
-			console.log('Token is invalid');
-			// BUT, can still reference local scores and "saves score" as props.player = 'UNKNOWN'
-			// Will still 'save' on client side - probably via redux
-
-		} else if(props.token === 'EXPIRED') {
-			console.log('Token has expired');
-		} else {	// logged in
-			console.log('Token exists');
-			// check 'local' stats (score + timing) if there is an existing record
-	
-			// if existing, check if there is even a need to update the highscore (i.e., new pb score) + update backend if so (patch)
-	
-			// if user has no scores in current mode, update backend (post)
-			sendRequest({
-				url: 'http://localhost:4000/game',
-				method: 'POST',
-				data: {
-					score: statsState.score,
-					state: `${windowSize}_${timerSec}`,
-					player: props.player,
-					id: props.playerId
-				},
-				headers: {
-					'Content-Type':'application/json',
-					'Authorization':`Bearer ${props.token}`
-				}
-			}, () => {console.log('applyData()')});
-		}
-	}, [props.player, props.playerId, props.token, sendRequest, statsState.score, timerSec, windowSize])
+	const gameState = props.state;
+	const topScore = playerScore[gameState];
 
 	// To trigger the stop game function once when timer ends
 	useEffect(() => {
 		if(timer === 0) {
-			console.log('Timer = 0!');
 			stopGameHandler();
-			resetTimer();	// resetTimer is necessary so that this won't trigger again
+			resetTimer();	// resetTimer is necessary so that this won't trigger again 
+			if(statsState.score > topScore) {
+				setPlayerScore(gameState, statsState.score);
+				// update backend here (dk if it works)
+				if(user) {
+					sendRequest({
+						url: 'http://localhost:4000/game',
+						method: 'POST',
+						data: {
+							score: statsState.score,
+							state: gameState,
+							playerId: user.id,
+						},
+						token: user.token
+					}, (data) => {
+						console.log(data.message);
+					})
+				}
+			}
 		}
-	}, [timer, stopGameHandler, resetTimer])
+	}, [timer, stopGameHandler, resetTimer, statsState.score, topScore, setPlayerScore, gameState, user, sendRequest])
 
 	// From start -> game
 	function startGameHandler() {
@@ -195,7 +285,7 @@ function TargetWindow(props) {
 			case '3':
 				setCrosshair({
 					id: 3,
-					style: `url(${xhair3}) 12 12, auto`
+					style: `url(${xhair3}) 10 10, auto`
 				})
 				break;
 			default:
@@ -238,7 +328,7 @@ function TargetWindow(props) {
 		}
 	}
 
-	// Shows the pixel dimensions of the game
+	// Shows the pixel dimensions of the game 
 	const windowDimensions = 
 		<div className='absolute right-2 bottom-0'>
 			<p>{windowWidth} x {windowHeight}</p>

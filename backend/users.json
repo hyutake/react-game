@@ -5,20 +5,43 @@
 			"password": "$2a$12$2pBYZvmqcylwA4UGScmIAe64V92UIia7S/tsdlLkyj7v1zVr5wIb.",
 			"alias": "hYu",
 			"id": "0a5eb495-4dfd-4e0f-ba6e-b3dd7bf47dce"
+		},
+		{
+			"username": "tester",
+			"password": "$2a$12$T/FwVzqq1.K58yKkw/yoM.abyhyL2qb.etCGjsnIRHHR0EBCi1tS.",
+			"alias": "TEST",
+			"id": "90a41c61-a0ec-4098-9e79-2796b198b85b"
 		}
 	],
 	"game": [
 		{
 			"alias": "hYu",
 			"id": "0a5eb495-4dfd-4e0f-ba6e-b3dd7bf47dce",
-			"s_15": 21,
+			"s_15": 24,
 			"s_30": 0,
 			"s_45": 0,
 			"s_60": 0,
 			"m_15": 23,
 			"m_30": 0,
+			"m_45": 0,
 			"m_60": 0,
-			"l_15": 0,
+			"l_15": 18,
+			"l_30": 0,
+			"l_45": 0,
+			"l_60": 0
+		},
+		{
+			"alias": "TEST",
+			"id": "90a41c61-a0ec-4098-9e79-2796b198b85b",
+			"s_15": 20,
+			"s_30": 0,
+			"s_45": 0,
+			"s_60": 0,
+			"m_15": 19,
+			"m_30": 0,
+			"m_45": 0,
+			"m_60": 0,
+			"l_15": 18,
 			"l_30": 0,
 			"l_45": 0,
 			"l_60": 0

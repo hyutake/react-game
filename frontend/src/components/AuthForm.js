@@ -1,50 +1,70 @@
 import {
-	Form,
 	Link,
 	useSearchParams,
-	useActionData,
-	useNavigation,
+	useNavigate,
 } from "react-router-dom";
+import { useAuthContext } from "../store/auth-context";
 
 // import classes from "./AuthForm.module.css";
 
 function AuthForm() {
 	const [searchParams] = useSearchParams();
-	const actionData = useActionData();		// receives error responses of status 422 & 401 from backend (if any)
-	const navigation = useNavigation();
+	const navigate = useNavigate();
+	const {error, loading, login, signup} = useAuthContext();
 	// retrieving the set query parameter (assume that its either login or signup only)
 	const isLogin = searchParams.get("mode") === "login";
 	
 	const btnText = isLogin ? "Login" : 'Create account';
 
-	const isSubmitting = navigation.state === "submitting";
+	// Issue: errors in login still result in a navigation when I don't want it to happen :/
+	async function submitHandler(event) {
+		event.preventDefault();
+
+		const formData = new FormData(event.currentTarget);
+		const username = formData.get("username");
+		const password = formData.get("password");
+		if(isLogin) {
+			login({ username, password }).then(() => {
+				navigate('/');
+			}).catch(err => {
+				console.error(err);
+			});
+		} else {
+			const alias = formData.get("alias");
+			signup({ username, password, alias }).then(() => {
+				navigate('/login?mode=login');
+			}).catch(err => {
+				console.error(err);
+			});
+		}		
+	}
 
 	return (
 		<> 
-			<Form method="post" className="w-full max-w-2xl my-8 mx-auto">
+			<form onSubmit={submitHandler} className="w-full max-w-2xl my-8 mx-auto">
 				<h1 className="text-4xl font-bold p-4">{isLogin ? "Log in" : "Sign up"}</h1>
-				{actionData && actionData.errors && (
+				{error && error.errors && (
 					<ul>
-						{Object.values(actionData.errors).map((err) => {
+						{Object.values(error.errors).map((err) => {
 							return <li key={err}>{err}</li>;
 						})}
 					</ul>
 				)}
-				{actionData && actionData.message && (
-					<p>{actionData.message}</p>
+				{error && error.message && (
+					<p>{error.message}</p>
 				)}
 				{!isLogin && <p className="mb-2">
-					<label htmlFor="alias" className="w-full block">Alias</label>
+					<label htmlFor="alias" className="w-full block font-semibold">Alias</label>
 					<input className="w-full block p-1 rounded" id="alias" type="text" name="alias" />
 				</p>}
 				<p className="mb-2">
-					<label className="w-full block" htmlFor="username">Username</label>
-					<input className="w-full block p-1 rounded" id="username" type="text" name="username" required />
+					<label className="w-full block font-semibold" htmlFor="username">Username</label>
+					<input className="w-full block p-1 rounded text-center" id="username" type="text" name="username" required />
 				</p>
 				<p className="mb-2">
-					<label className="w-full block" htmlFor="password">Password</label>
+					<label className="w-full block font-semibold" htmlFor="password">Password</label>
 					<input
-						className="w-full block p-1 rounded"
+						className="w-full block p-1 rounded text-center"
 						id="password"
 						type="password"
 						name="password"
@@ -55,11 +75,11 @@ function AuthForm() {
 					<Link className=" hover:text-amber-300" to={`?mode=${isLogin ? "signup" : "login"}`}>
 						{isLogin ? "Create new user" : "Cancel"}
 					</Link>
-					<button className="py-2 px-6 rounded bg-zinc-200 text-zinc-900" disabled={isSubmitting}>
-						{isSubmitting ? "Submitting..." : btnText}
+					<button className="py-2 px-6 rounded bg-zinc-200 text-zinc-900" disabled={loading}>
+						{loading ? "Submitting..." : btnText}
 					</button>
 				</div>
-			</Form>
+			</form>
 		</>
 	);
 }
