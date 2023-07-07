@@ -31,6 +31,10 @@ function HomePage() {
                 <ul className="list-decimal">
                     <li>Backend score keeping integration - mostly working? No bugs found so far</li>
                     <li>Customisable targets - 4 colors for now, maybe do game types later</li>
+                    <ul>
+                        <li>3 different target spawning algo created (full random, less random, alt. center and random)</li>
+                        <li>Need to manually comment out their respective useEffect() hooks to use any one of them</li>
+                    </ul>
                     <li>Customisable xhair - 3 presets for now</li>
                     <li>Use tailwind css - trying</li>
                 </ul>

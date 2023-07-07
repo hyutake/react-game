@@ -109,119 +109,119 @@ function TargetWindow(props) {
 	// }, [statsState.score, windowWidth, windowHeight]);
 
 	// Game type 2: Alternate between random and center position
-	useEffect(() => {
-		const flickPractice = () => {
-			const maxLeft = windowWidth - 50;
-			const maxTop = windowHeight - 50;
-			if (statsState.score % 2 === 0) {
-				// score is divisible by 2
-				// center spawn
-				setTargetPos({
-					x: Math.floor(maxLeft / 2),
-					y: Math.floor(maxTop / 2),
-				});
-			} else {
-				// random spawn
-				setTargetPos({
-					x: Math.random() * maxLeft,
-					y: Math.random() * maxTop,
-				});
-			}
-		};
-		flickPractice();
-	},[statsState.score, windowWidth, windowHeight])
+	// useEffect(() => {
+	// 	const flickPractice = () => {
+	// 		const maxLeft = windowWidth - 50;
+	// 		const maxTop = windowHeight - 50;
+	// 		if (statsState.score % 2 === 0) {
+	// 			// score is divisible by 2
+	// 			// center spawn
+	// 			setTargetPos({
+	// 				x: Math.floor(maxLeft / 2),
+	// 				y: Math.floor(maxTop / 2),
+	// 			});
+	// 		} else {
+	// 			// random spawn
+	// 			setTargetPos({
+	// 				x: Math.random() * maxLeft,
+	// 				y: Math.random() * maxTop,
+	// 			});
+	// 		}
+	// 	};
+	// 	flickPractice();
+	// },[statsState.score, windowWidth, windowHeight])
 
 
 	// Game type 3: Random re-positioning, but higher % chance of generating a closer position
-	// useEffect(() => {
-	// 	const lessRandom = () => {
-	// 		const maxLeft = windowWidth - 50;
-	// 		const maxTop = windowHeight - 50;
+	useEffect(() => {
+		const lessRandom = () => {
+			const maxLeft = windowWidth - 50;
+			const maxTop = windowHeight - 50;
 	
-	// 		// configuring spawns
-	// 		const idealSpawnRange = 150; // furthest a target is allowed to spawn
-	// 		let isAdd = Math.random() < 0.5; // randomize whether its a '+' or '-'
-	// 		const maxAttemptsBeforeGivingUp = 5; // number of random gen. loops allowed before giving up and just doing random repos
+			// configuring spawns
+			const idealSpawnRange = 150; // furthest a target is allowed to spawn
+			let isAdd = Math.random() < 0.5; // randomize whether its a '+' or '-'
+			const maxAttemptsBeforeGivingUp = 5; // number of random gen. loops allowed before giving up and just doing random repos
 	
-	// 		setTargetPos((prevPos) => {
-	// 			let attemptCount = 1;
-	// 			// generate x pos
-	// 			let newX = prevPos.x + Math.random() * idealSpawnRange;
-	// 			// generate y pos
-	// 			let newY = prevPos.y + Math.random() * idealSpawnRange;
-	// 			if (isAdd) {
-	// 				// increase value of original pos
-	// 				while (newX >= maxLeft || newX <= 0) {
-	// 					// newX should be within [0, maxLeft]
-	// 					attemptCount++;
-	// 					if (attemptCount > maxAttemptsBeforeGivingUp) {
-	// 						console.log(
-	// 							"Giving up! Generating random pos instead!"
-	// 						);
-	// 						return {
-	// 							x: Math.random() * maxLeft,
-	// 							y: Math.random() * maxTop,
-	// 						};
-	// 					}
-	// 					newX = prevPos.x + Math.random() * idealSpawnRange;
-	// 				}
-	// 				while (newY >= maxTop || newY <= 0) {
-	// 					// newY should be within [0, maxTop]
-	// 					attemptCount++;
-	// 					if (attemptCount > maxAttemptsBeforeGivingUp) {
-	// 						console.log(
-	// 							"Giving up! Generating random pos instead!"
-	// 						);
-	// 						return {
-	// 							x: Math.random() * maxLeft,
-	// 							y: Math.random() * maxTop,
-	// 						};
-	// 					}
-	// 					newY = prevPos.y + Math.random() * idealSpawnRange;
-	// 				}
-	// 				return {
-	// 					x: newX,
-	// 					y: newY,
-	// 				};
-	// 			} else {
-	// 				// decrease value of original pos
-	// 				while (newX >= maxLeft || newX <= 0) {
-	// 					// newX should be within [0, maxLeft]
-	// 					attemptCount++;
-	// 					if (attemptCount > maxAttemptsBeforeGivingUp) {
-	// 						console.log(
-	// 							"Giving up! Generating random pos instead!"
-	// 						);
-	// 						return {
-	// 							x: Math.random() * maxLeft,
-	// 							y: Math.random() * maxTop,
-	// 						};
-	// 					}
-	// 					newX = prevPos.x - Math.random() * idealSpawnRange;
-	// 				}
-	// 				while (newY >= maxTop || newY <= 0) {
-	// 					// newY should be within [0, maxTop]
-	// 					attemptCount++;
-	// 					if (attemptCount > maxAttemptsBeforeGivingUp) {
-	// 						console.log(
-	// 							"Giving up! Generating random pos instead!"
-	// 						);
-	// 						return {
-	// 							x: Math.random() * maxLeft,
-	// 							y: Math.random() * maxTop,
-	// 						};
-	// 					}
-	// 					newY = prevPos.y - Math.random() * idealSpawnRange;
-	// 				}
-	// 				return {
-	// 					x: newX,
-	// 					y: newY,
-	// 				};
-	// 			}
-	// 		});
-	// 	};
-	// 	lessRandom();
-	// }, [statsState.score, windowWidth, windowHeight]);
+			setTargetPos((prevPos) => {
+				let attemptCount = 1;
+				// generate x pos
+				let newX = prevPos.x + Math.random() * idealSpawnRange;
+				// generate y pos
+				let newY = prevPos.y + Math.random() * idealSpawnRange;
+				if (isAdd) {
+					// increase value of original pos
+					while (newX >= maxLeft || newX <= 0) {
+						// newX should be within [0, maxLeft]
+						attemptCount++;
+						if (attemptCount > maxAttemptsBeforeGivingUp) {
+							console.log(
+								"Giving up! Generating random pos instead!"
+							);
+							return {
+								x: Math.random() * maxLeft,
+								y: Math.random() * maxTop,
+							};
+						}
+						newX = prevPos.x + Math.random() * idealSpawnRange;
+					}
+					while (newY >= maxTop || newY <= 0) {
+						// newY should be within [0, maxTop]
+						attemptCount++;
+						if (attemptCount > maxAttemptsBeforeGivingUp) {
+							console.log(
+								"Giving up! Generating random pos instead!"
+							);
+							return {
+								x: Math.random() * maxLeft,
+								y: Math.random() * maxTop,
+							};
+						}
+						newY = prevPos.y + Math.random() * idealSpawnRange;
+					}
+					return {
+						x: newX,
+						y: newY,
+					};
+				} else {
+					// decrease value of original pos
+					while (newX >= maxLeft || newX <= 0) {
+						// newX should be within [0, maxLeft]
+						attemptCount++;
+						if (attemptCount > maxAttemptsBeforeGivingUp) {
+							console.log(
+								"Giving up! Generating random pos instead!"
+							);
+							return {
+								x: Math.random() * maxLeft,
+								y: Math.random() * maxTop,
+							};
+						}
+						newX = prevPos.x - Math.random() * idealSpawnRange;
+					}
+					while (newY >= maxTop || newY <= 0) {
+						// newY should be within [0, maxTop]
+						attemptCount++;
+						if (attemptCount > maxAttemptsBeforeGivingUp) {
+							console.log(
+								"Giving up! Generating random pos instead!"
+							);
+							return {
+								x: Math.random() * maxLeft,
+								y: Math.random() * maxTop,
+							};
+						}
+						newY = prevPos.y - Math.random() * idealSpawnRange;
+					}
+					return {
+						x: newX,
+						y: newY,
+					};
+				}
+			});
+		};
+		lessRandom();
+	}, [statsState.score, windowWidth, windowHeight]);
 
 	function clickWindowHandler() {
 		if (isActive) {
