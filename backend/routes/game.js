@@ -12,6 +12,4 @@ router.use(checkAuthMiddleware);
 
 router.post('/', gameController.postScore);
 
-router.patch('/', gameController.patchScore);
-
 module.exports = router;

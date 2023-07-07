@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import useLocalStorage from "./use-local-storage";
 
 const useAuth = () => {
@@ -20,7 +20,13 @@ const useAuth = () => {
 					},
 				}
 			);
-			setUser(response.data); // will be {token, alias, id} from backend
+			const expiration = new Date();
+			expiration.setHours(expiration.getHours() + 1);
+			const expirationString = expiration.toISOString();
+			setUser({
+				...response.data,
+				expirationString
+			}); // will be {token, alias, id} from backend
 			console.log("Login successful!");
 		} catch (err) {
 			setError(err.response.data);
@@ -52,10 +58,10 @@ const useAuth = () => {
         }
 	};
 
-	const logout = () => {
+	const logout = useCallback(() => {
 		setUser(null);
         console.log("Logged out!");
-	};
+	}, [setUser]);
 
 	return {
 		user,

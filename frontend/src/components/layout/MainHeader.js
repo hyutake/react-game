@@ -33,6 +33,11 @@ function MainHeader() {
 							<button className="p-1">Test Page</button>
 						</Link>
 					</li>
+					{user && <li>
+						<Link to="/scores">
+							<button className="p-1">Scores</button>
+						</Link>
+					</li>}
 					{authBtnDisplay}
 				</ul>
 			</nav>

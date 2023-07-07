@@ -50,9 +50,3 @@ exports.postScore = async (req, res, next) => {
 	await writeData("users.json", storedData);
 	res.status(201).json({ message: "postScore() success!" });
 };
-
-exports.patchScore = (req, res, next) => {
-	console.log("patchScores()");
-	console.log(req.body);
-	res.status(201).json({ message: "patchScore called!" });
-};

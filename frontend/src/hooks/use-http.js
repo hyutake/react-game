@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import axios from "axios";
+import { useAuthContext } from "../store/auth-context";
 
 const useHttp = () => {
 	/*
@@ -13,6 +14,7 @@ const useHttp = () => {
         applyData: callback function to work with the response data 
     */
 	const [error, setError] = useState(null);
+	const {logout} = useAuthContext();
 	const sendRequest = useCallback((requestConfig, applyData) => {
 		if (requestConfig.method === "GET") {
 			axios
@@ -49,9 +51,12 @@ const useHttp = () => {
 					setError(
 						err.response.data || "Error occured in POST request"
 					);
+					// TESTING TOKEN EXPIRATION!!!
+					console.log('Token expired!');
+					logout();
 				});
 		}
-	}, []);
+	}, [logout]);
 
 	return {
 		error,
