@@ -40,7 +40,13 @@ exports.postLogin = async (req, res, next) => {
 	// login attempt is valid - return a token
 	console.log(`[ADMIN]: user '${username}' has logged in successfully`);
 	const token = createJSONToken(username);
-	res.json({ token, id: user.id });
+
+	// get time of expiry
+	const expiration = new Date();	// current time
+	expiration.setHours(expiration.getHours() + 1);		// time in 1 hour
+	const tokenExpiry = Math.floor(expiration.getTime() / 1000);	// time in seconds from epoch
+
+	res.json({ token, tokenExpiry, id: user.id });
 };
 
 exports.postSignup = async (req, res, next) => {

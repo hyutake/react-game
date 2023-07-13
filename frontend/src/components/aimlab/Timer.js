@@ -1,4 +1,4 @@
-import classes from "./Timer.module.css";
+// import classes from "./Timer.module.css";
 
 const Timer = (props) => {
 	const formatTime = (time) => {
@@ -9,7 +9,7 @@ const Timer = (props) => {
 		return `${seconds}:${milliseconds}`;
 	};
 
-	return <h1 className={classes.timer}>{formatTime(props.time)}</h1>;
+	return <h1 className="m-2 p-0 text-amber-200">{formatTime(props.time)}</h1>;
 };
 
 export default Timer;

@@ -20,12 +20,9 @@ const useAuth = () => {
 					},
 				}
 			);
-			const expiration = new Date();
-			expiration.setHours(expiration.getHours() + 1);
-			const expirationString = expiration.toISOString();
+
 			setUser({
 				...response.data,
-				expirationString
 			}); // will be {token, alias, id} from backend
 			console.log("Login successful!");
 		} catch (err) {

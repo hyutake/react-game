@@ -3,6 +3,8 @@ const {readData, writeData} = require('../util/data');
 const {isValidRecord} = require('../util/record');
 
 exports.getScores = async (req, res, next) => {
+	// const authToken = req.headers.authorization;
+	// console.log(authToken);
     // get all the current users
 	const storedData = await readData("users.json");
 	res.status(201).json({message: "getScores called!", records: storedData.game});

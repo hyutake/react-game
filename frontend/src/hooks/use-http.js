@@ -51,7 +51,7 @@ const useHttp = () => {
 					setError(
 						err.response.data || "Error occured in POST request"
 					);
-					// TESTING TOKEN EXPIRATION!!!
+					// if token has expired, POST req. will throw an error
 					console.log('Token expired!');
 					logout();
 				});

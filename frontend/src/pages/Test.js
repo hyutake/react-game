@@ -36,12 +36,18 @@ const TestPage = () => {
 
 	const { error, sendRequest } = useHttp();
 
+	const convertToLocalTime = (dateInSecondsFromEpoch) => {
+		const date = new Date(dateInSecondsFromEpoch * 1000);
+		return date.toLocaleString('en-US', {
+			timeZone: 'Asia/Singapore'
+		});
+	}
+
 	const isLoggedIn = authCtx.user !== null;
-	const authIndicator = (
-		<div className="flex flex-row justify-center items-center">
-			<p className="my-4 mx-4 flex flex-col">
-				{authCtx.user && <span>authCtx.user.id: {authCtx.user.id}</span>}
-			</p>
+	const authIndicator = (isLoggedIn && 
+		<div className="flex flex-col justify-center items-center gap-1 first:mt-4 last: mb-4">
+			<p>authCtx.user.id: {authCtx.user.id}</p>
+			<p>authCtx.user.tokenExpiry: {convertToLocalTime(authCtx.user.tokenExpiry)}</p>
 		</div>
 	);
 

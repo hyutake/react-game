@@ -9,6 +9,7 @@ const KEY = "supersecret";
 exports.createJSONToken = (username) => {
 	return sign({ username }, KEY, { expiresIn: "1h" });
 };
+
 const validateJSONToken = (token) => {
 	return verify(token, KEY);
 };
